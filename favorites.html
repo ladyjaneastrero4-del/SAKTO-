@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAKTO - Favorite Spots</title>
+  <meta name="description" content="Your saved student-friendly places from SAKTO Local Discovery.">
+  <meta property="og:title" content="SAKTO - Favorite Spots">
+  <meta property="og:description" content="Your saved student-friendly places from SAKTO Local Discovery.">
+  <meta property="og:image" content="assets/hero.svg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-protected="true">
+  <header class="site-header"><a class="brand-link" href="index.html">🌿 SAKTO</a><button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button><nav id="siteNav" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="dashboard.html">Dashboard</a><a href="budget.html">Budget</a><a href="savings.html">Savings</a><a href="local-discovery.html">Discover</a><a href="favorites.html">Favorites</a><a href="contact.html">Contact</a></nav></header>
+
+  <div role="main" class="container wide-container">
+    <div class="logo">
+      <p class="brand-name">SAKTO</p>
+      <p>Student Budget & Local Discovery</p>
+    </div>
+
+    <div class="page-box">
+      <h1>⭐ Favorite Spots</h1>
+      <p class="page-description">
+        Keep your favorite student-friendly places in one place.
+      </p>
+
+      <div class="favorite-list" id="favorite-list"></div>
+
+      <div class="page-navigation">
+        <a href="dashboard.html">← Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let memoryFavorites = [];
+    let storageWorks = true;
+
+    function loadFavorites() {
+      if (!storageWorks) return memoryFavorites;
+      try {
+        const saved = localStorage.getItem('sakto-favorites');
+        return saved ? JSON.parse(saved) : [];
+      } catch (err) {
+        storageWorks = false;
+        return memoryFavorites;
+      }
+    }
+
+    function saveFavorites(favs) {
+      if (!storageWorks) { memoryFavorites = favs; return; }
+      try {
+        localStorage.setItem('sakto-favorites', JSON.stringify(favs));
+      } catch (err) {
+        storageWorks = false;
+        memoryFavorites = favs;
+      }
+    }
+
+    function render() {
+      const favs = loadFavorites();
+      const list = document.getElementById('favorite-list');
+      list.innerHTML = '';
+
+      if (favs.length === 0) {
+        list.innerHTML = `
+          <div class="empty-favorite">
+            <div>♡</div>
+            <h3>Your Favorites</h3>
+            <p>Your favorite places can be displayed here.</p>
+            <a href="local-discovery.html">Explore Local Places</a>
+          </div>
+        `;
+        return;
+      }
+
+      favs.forEach(fav => {
+        const card = document.createElement('div');
+        card.className = 'favorite-card';
+        card.innerHTML = `
+          <div class="favorite-icon">${SAKTO.esc(fav.icon)}</div>
+          <div class="favorite-info">
+            <h3>${SAKTO.esc(fav.name)}</h3>
+            <p>${SAKTO.esc(fav.desc)}</p>
+            <span>${SAKTO.esc(fav.price)}</span>
+          </div>
+          <div class="favorite-star" title="Remove from favorites">★</div>
+        `;
+        card.querySelector('.favorite-star').addEventListener('click', () => {
+          saveFavorites(loadFavorites().filter(f => f.name !== fav.name));
+          render();
+        });
+        list.appendChild(card);
+      });
+    }
+
+    render();
+  </script>
+<footer class="site-footer"><p>© 2026 SAKTO · Tarlac State University, College of Computer Studies · Web Development Final Project</p></footer>
+</body>
+</html>

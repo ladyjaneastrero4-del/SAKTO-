@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAKTO - Savings</title>
+  <meta name="description" content="Log leftover weekly or monthly money and watch your total savings grow.">
+  <meta property="og:title" content="SAKTO - Savings">
+  <meta property="og:description" content="Log leftover weekly or monthly money and watch your total savings grow.">
+  <meta property="og:image" content="assets/hero.svg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-protected="true">
+  <header class="site-header"><a class="brand-link" href="index.html">🌿 SAKTO</a><button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button><nav id="siteNav" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="dashboard.html">Dashboard</a><a href="budget.html">Budget</a><a href="savings.html">Savings</a><a href="local-discovery.html">Discover</a><a href="favorites.html">Favorites</a><a href="contact.html">Contact</a></nav></header>
+
+  <div role="main" class="container wide-container">
+    <div class="logo">
+      <p class="brand-name">SAKTO</p>
+      <p>Student Budget & Local Discovery</p>
+    </div>
+
+    <div class="page-box">
+      <h1>🐷 Savings</h1>
+      <p class="page-description">
+        Log your leftover money each week or month and watch it add up.
+      </p>
+
+      <div class="budget-summary savings-summary">
+        <div class="budget-card">
+          <h3>Total Saved</h3>
+          <p id="total-saved">₱0.00</p>
+        </div>
+        <div class="budget-card">
+          <h3>Entries Logged</h3>
+          <p id="entry-count">0</p>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Add Savings</h3>
+        <form id="savings-form">
+          <label>Amount Saved</label>
+          <input type="number" id="savings-amount" placeholder="₱0.00" min="0" step="0.01" required>
+
+          <label>Period</label>
+          <select id="savings-period" required>
+            <option value="">Select Period</option>
+            <option>Weekly</option>
+            <option>Monthly</option>
+          </select>
+
+          <label>Label (optional)</label>
+          <input type="text" id="savings-label" placeholder="e.g. Week 1, or June">
+
+          <button type="submit">Add Savings</button>
+        </form>
+      </div>
+
+      <div class="section-card">
+        <h3>Savings History</h3>
+        <div id="savings-list">
+          <div class="expense-item" id="empty-savings-msg">
+            <div>
+              <strong>No savings logged yet</strong>
+              <small>Add your leftover money above to start tracking it.</small>
+            </div>
+            <span>₱0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-navigation">
+        <a href="dashboard.html">← Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('savings-form');
+    const amountInput = document.getElementById('savings-amount');
+    const periodInput = document.getElementById('savings-period');
+    const labelInput = document.getElementById('savings-label');
+    const savingsList = document.getElementById('savings-list');
+    const emptyMsg = document.getElementById('empty-savings-msg');
+
+    const totalSavedEl = document.getElementById('total-saved');
+    const entryCountEl = document.getElementById('entry-count');
+
+    function formatPeso(num) {
+      return SAKTO.cur() + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // In-memory fallback in case localStorage is unavailable (e.g. some
+    // browsers block it when a page is opened directly from disk via file://)
+    let memorySavings = [];
+    let storageWorks = true;
+
+    function loadSavings() {
+      if (!storageWorks) return memorySavings;
+      try {
+        const saved = localStorage.getItem('sakto-savings');
+        return saved ? JSON.parse(saved) : [];
+      } catch (err) {
+        storageWorks = false;
+        return memorySavings;
+      }
+    }
+
+    function saveSavings(entries) {
+      if (!storageWorks) {
+        memorySavings = entries;
+        return;
+      }
+      try {
+        localStorage.setItem('sakto-savings', JSON.stringify(entries));
+      } catch (err) {
+        storageWorks = false;
+        memorySavings = entries;
+      }
+    }
+
+    function render() {
+      const entries = loadSavings();
+
+      savingsList.innerHTML = '';
+
+      if (entries.length === 0) {
+        savingsList.appendChild(emptyMsg);
+      } else {
+        entries.slice().reverse().forEach(entry => {
+          const item = document.createElement('div');
+          item.className = 'expense-item';
+          const label = entry.label ? entry.label : entry.period;
+          item.innerHTML = `
+            <div>
+              <strong>${SAKTO.esc(label)}</strong>
+              <small>${SAKTO.esc(entry.period)}</small>
+            </div>
+            <span>${formatPeso(entry.amount)}</span>
+          `;
+          savingsList.appendChild(item);
+        });
+      }
+
+      const total = entries.reduce((sum, e) => sum + e.amount, 0);
+      totalSavedEl.textContent = formatPeso(total);
+      entryCountEl.textContent = entries.length;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const amount = parseFloat(amountInput.value);
+      const period = periodInput.value;
+      const label = labelInput.value.trim();
+
+      if (isNaN(amount) || amount <= 0 || !period) return;
+
+      const entries = loadSavings();
+      entries.push({ amount, period, label, time: Date.now() });
+      saveSavings(entries);
+
+      form.reset();
+      render();
+    });
+
+    render();
+  </script>
+<footer class="site-footer"><p>© 2026 SAKTO · Tarlac State University, College of Computer Studies · Web Development Final Project</p></footer>
+</body>
+</html>

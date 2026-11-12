@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAKTO - Budget Tracker</title>
+  <meta name="description" content="Set a student budget, log daily expenses by category and see what is left.">
+  <meta property="og:title" content="SAKTO - Budget Tracker">
+  <meta property="og:description" content="Set a student budget, log daily expenses by category and see what is left.">
+  <meta property="og:image" content="assets/hero.svg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
+<style>
+    .budget-input-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .budget-input-row input {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .budget-input-row button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+</style>
+</head>
+
+<body data-protected="true">
+  <header class="site-header"><a class="brand-link" href="index.html">🌿 SAKTO</a><button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button><nav id="siteNav" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="dashboard.html">Dashboard</a><a href="budget.html">Budget</a><a href="savings.html">Savings</a><a href="local-discovery.html">Discover</a><a href="favorites.html">Favorites</a><a href="contact.html">Contact</a></nav></header>
+
+  <div role="main" class="container wide-container">
+
+    <div class="logo">
+      <p class="brand-name">SAKTO</p>
+      <p>Student Budget & Local Discovery</p>
+    </div>
+
+    <div class="page-box">
+      <h1>💰 Budget Tracker</h1>
+      <p class="page-description">
+        Keep track of your student budget and daily expenses.
+      </p>
+
+      <div class="section-card">
+        <h3>Set Your Total Budget</h3>
+        <p>You can enter or change your total budget anytime.</p>
+        <div class="budget-input-row">
+          <input
+            type="number"
+            id="budgetInput"
+            placeholder="Enter total budget"
+            min="0"
+            step="0.01"
+          >
+          <button type="button" id="saveBudgetBtn">Save Budget</button>
+        </div>
+      </div>
+
+      <div class="budget-summary">
+        <div class="budget-card">
+          <h3>Total Budget</h3>
+          <p id="totalBudget">₱1,000.00</p>
+        </div>
+
+        <div class="budget-card">
+          <h3>Total Expenses</h3>
+          <p id="totalExpenses">₱0.00</p>
+        </div>
+
+        <div class="budget-card">
+          <h3>Remaining</h3>
+          <p id="remaining">₱1,000.00</p>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Add Expense</h3>
+
+        <form id="expenseForm">
+          <label for="expenseName">Expense Name</label>
+          <input
+            type="text"
+            id="expenseName"
+            placeholder="Example: Lunch"
+            required
+          >
+
+          <label for="expenseAmount">Amount</label>
+          <input
+            type="number"
+            id="expenseAmount"
+            placeholder="₱0.00"
+            min="0.01"
+            step="0.01"
+            required
+          >
+
+          <label for="expenseCategory">Category</label>
+          <select id="expenseCategory" required>
+            <option value="">Select Category</option>
+            <option>Food</option>
+            <option>Transportation</option>
+            <option>School</option>
+            <option>Shopping</option>
+            <option>Entertainment</option>
+            <option>Other</option>
+          </select>
+
+          <button type="submit">Add Expense</button>
+        </form>
+      </div>
+
+      <div class="section-card">
+        <h3>Recent Expenses</h3>
+        <div id="expenseList"></div>
+      </div>
+
+      <div class="page-navigation">
+        <a href="dashboard.html">← Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let totalBudget = parseFloat(localStorage.getItem("sakto-budget")) || 1000;
+    const budgetInput = document.getElementById("budgetInput");
+    const saveBudgetBtn = document.getElementById("saveBudgetBtn");
+    const expenseForm = document.getElementById("expenseForm");
+    const expenseList = document.getElementById("expenseList");
+    const totalExpensesDisplay = document.getElementById("totalExpenses");
+    const remainingDisplay = document.getElementById("remaining");
+
+    let expenses = JSON.parse(localStorage.getItem("sakto-expenses")) || [];
+
+    function formatPeso(amount) {
+      return SAKTO.cur() + amount.toLocaleString("en-PH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function updateBudgetDisplay() {
+      document.getElementById("totalBudget").textContent = formatPeso(totalBudget);
+      budgetInput.value = totalBudget;
+    }
+
+    saveBudgetBtn.addEventListener("click", function() {
+      const newBudget = parseFloat(budgetInput.value);
+
+      if (isNaN(newBudget) || newBudget < 0) {
+        alert("Please enter a valid budget amount.");
+        return;
+      }
+
+      totalBudget = newBudget;
+      localStorage.setItem("sakto-budget", totalBudget);
+      displayExpenses();
+      alert("Your total budget has been saved!");
+    });
+
+    function displayExpenses() {
+      updateBudgetDisplay();
+      expenseList.innerHTML = "";
+      let totalExpenses = 0;
+
+      if (expenses.length === 0) {
+        expenseList.innerHTML = `
+          <div class="expense-item">
+            <div>
+              <strong>No expenses yet</strong>
+              <small>Your added expenses will appear here.</small>
+            </div>
+            <span>₱0.00</span>
+          </div>
+        `;
+      } else {
+        expenses.forEach((expense, index) => {
+          totalExpenses += expense.amount;
+
+          const expenseItem = document.createElement("div");
+          expenseItem.className = "expense-item";
+
+          expenseItem.innerHTML = `
+            <div>
+              <strong>${escapeHTML(expense.name)}</strong>
+              <small>${escapeHTML(expense.category)}</small>
+            </div>
+            <span>${formatPeso(expense.amount)}</span>
+            <button type="button" onclick="deleteExpense(${index})">
+              Delete
+            </button>
+          `;
+
+          expenseList.appendChild(expenseItem);
+        });
+      }
+
+      totalExpensesDisplay.textContent = formatPeso(totalExpenses);
+
+      const remaining = totalBudget - totalExpenses;
+      remainingDisplay.textContent = formatPeso(remaining);
+    }
+
+    function escapeHTML(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    expenseForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("expenseName").value.trim();
+      const amount = parseFloat(
+        document.getElementById("expenseAmount").value
+      );
+      const category = document.getElementById("expenseCategory").value;
+
+      if (!name || isNaN(amount) || amount <= 0 || !category) {
+        alert("Please complete all fields.");
+        return;
+      }
+
+      expenses.push({
+        name: name,
+        amount: amount,
+        category: category,
+        time: Date.now()
+      });
+
+      localStorage.setItem("sakto-expenses", JSON.stringify(expenses));
+
+      displayExpenses();
+      expenseForm.reset();
+    });
+
+    function deleteExpense(index) {
+      expenses.splice(index, 1);
+      localStorage.setItem("sakto-expenses", JSON.stringify(expenses));
+      displayExpenses();
+    }
+
+    displayExpenses();
+  </script>
+<footer class="site-footer"><p>© 2026 SAKTO · Tarlac State University, College of Computer Studies · Web Development Final Project</p></footer>
+</body>
+</html>

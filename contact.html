@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAKTO - Contact</title>
+  <meta name="description" content="Contact the SAKTO team with questions or feedback.">
+  <meta property="og:title" content="SAKTO - Contact">
+  <meta property="og:description" content="Contact the SAKTO team with questions or feedback.">
+  <meta property="og:image" content="assets/hero.svg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header"><a class="brand-link" href="index.html">🌿 SAKTO</a><button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button><nav id="siteNav" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="dashboard.html">Dashboard</a><a href="budget.html">Budget</a><a href="savings.html">Savings</a><a href="local-discovery.html">Discover</a><a href="favorites.html">Favorites</a><a href="contact.html">Contact</a></nav></header>
+<div role="main" class="container wide-container">
+    <section class="page-box section-card">
+      <h1>Contact Us</h1>
+      <p class="page-description">Questions or feedback? Send us a message.</p>
+      <form id="contactForm" novalidate>
+        <label for="cName">Name</label><input type="text" id="cName" autocomplete="name">
+        <label for="cEmail">Email</label><input type="email" id="cEmail" autocomplete="email">
+        <label for="cMessage">Message</label><textarea id="cMessage" rows="5"></textarea>
+        <p class="form-error" id="formError" role="alert"></p>
+        <button type="submit">Send message</button>
+      </form>
+    </section>
+    <section class="page-box section-card" aria-labelledby="faq">
+      <h2 id="faq">Frequently asked questions</h2>
+      <details><summary>Is my data uploaded anywhere?</summary><p>No. Everything is saved in your own browser.</p></details>
+      <details><summary>Why did my data disappear?</summary><p>Clearing browser data or switching devices removes it, since there is no server.</p></details>
+      <details><summary>Is SAKTO free?</summary><p>Yes, it is a student project.</p></details>
+    </section>
+  </div>
+<footer class="site-footer"><p>© 2026 SAKTO · Tarlac State University, College of Computer Studies · Web Development Final Project</p></footer>
+</body>
+</html>

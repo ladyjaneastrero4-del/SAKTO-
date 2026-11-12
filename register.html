@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAKTO - Create Account</title>
+  <meta name="description" content="Create a free SAKTO student account to track your budget, savings and favorite places.">
+  <meta property="og:title" content="SAKTO - Create Account">
+  <meta property="og:description" content="Create a free SAKTO student account to track your budget, savings and favorite places.">
+  <meta property="og:image" content="assets/hero.svg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header"><a class="brand-link" href="index.html">🌿 SAKTO</a><button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button><nav id="siteNav" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="dashboard.html">Dashboard</a><a href="budget.html">Budget</a><a href="savings.html">Savings</a><a href="local-discovery.html">Discover</a><a href="favorites.html">Favorites</a><a href="contact.html">Contact</a></nav></header>
+
+  <div role="main" class="container">
+    <div class="logo">
+      <p class="brand-name">SAKTO</p>
+      <p>Student Budget & Local Discovery</p>
+    </div>
+
+    <div class="form-box">
+      <h1>Create Account</h1>
+      <p>Register your SAKTO student account</p>
+
+      <form id="registerForm">
+        <label>Full Name</label>
+        <input type="text" placeholder="Enter your full name" required>
+
+        <label>Email Address</label>
+        <input type="email" placeholder="Enter your email" required>
+
+        <label>Username</label>
+        <input type="text" placeholder="Create a username" required>
+
+        <label>Password</label>
+        <input type="password" placeholder="Create a password" required>
+
+        <label>Confirm Password</label>
+        <input type="password" placeholder="Confirm your password" required>
+
+        <p class="form-error" id="formError" role="alert"></p>
+        <button type="submit">Register</button>
+      </form>
+
+      <p class="switch">
+        Already have an account?
+        <a href="login.html">Log In</a>
+      </p>
+    </div>
+  </div>
+<footer class="site-footer"><p>© 2026 SAKTO · Tarlac State University, College of Computer Studies · Web Development Final Project</p></footer>
+</body>
+</html>

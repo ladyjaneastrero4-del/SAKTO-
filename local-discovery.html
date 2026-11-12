@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAKTO - Local Discovery</title>
+  <meta name="description" content="Find student-friendly food, coffee, study and entertainment spots filtered by your budget.">
+  <meta property="og:title" content="SAKTO - Local Discovery">
+  <meta property="og:description" content="Find student-friendly food, coffee, study and entertainment spots filtered by your budget.">
+  <meta property="og:image" content="assets/hero.svg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .search-box {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-box input[type="number"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      width: 100px;
+    }
+
+    #customizeBtn {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .budget-range-box {
+      display: none;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .budget-range-box.is-open {
+      display: flex;
+    }
+
+    .place-card {
+      cursor: pointer;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .modal-overlay.is-open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 420px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 20px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      border: none;
+      background: #f0f0f0;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .modal-box h3 {
+      margin-top: 0;
+      padding-right: 30px;
+    }
+
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .menu-item.out-of-budget {
+      opacity: 0.4;
+    }
+
+    .menu-item-name {
+      font-weight: 600;
+    }
+
+    .menu-item-price {
+      color: #444;
+    }
+
+    .modal-hint {
+      font-size: 13px;
+      color: #777;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header"><a class="brand-link" href="index.html">🌿 SAKTO</a><button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button><nav id="siteNav" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="dashboard.html">Dashboard</a><a href="budget.html">Budget</a><a href="savings.html">Savings</a><a href="local-discovery.html">Discover</a><a href="favorites.html">Favorites</a><a href="contact.html">Contact</a></nav></header>
+
+  <div role="main" class="container wide-container">
+    <div class="logo">
+      <p class="brand-name">SAKTO</p>
+      <p>Student Budget & Local Discovery</p>
+    </div>
+
+    <div class="page-box">
+      <h1>📍 Local Discovery</h1>
+      <p class="page-description">
+        Discover student-friendly places around your area.
+      </p>
+
+      <div class="search-box">
+        <input type="text" placeholder="Search for places..." aria-label="Search for places">
+        <button type="button">Search</button>
+        <button type="button" id="customizeBtn">Customize ▾</button>
+      </div>
+
+      <div class="budget-range-box" id="budgetRangeBox">
+        <input type="number" id="budgetMin" aria-label="Minimum budget" placeholder="Min ₱" min="0" step="1">
+        <input type="number" id="budgetMax" aria-label="Maximum budget" placeholder="Max ₱" min="0" step="1">
+      </div>
+
+      <div class="category-list">
+        <a href="#food">🍔 Food</a>
+        <a href="#coffee">☕ Coffee Shops</a>
+        <a href="#study">📚 Study Spots</a>
+        <a href="#entertainment">🎬 Entertainment</a>
+      </div>
+
+      <div class="places-grid" id="places-grid">
+        <div class="place-card" data-name="Student Food Hub" data-price-min="50" data-price-max="150" id="food" data-menu='[{"name":"Rice Meal","price":50},{"name":"Burger + Fries","price":65},{"name":"Combo Meal","price":120},{"name":"Special Platter","price":150}]'>
+          <div class="place-icon">🍔</div>
+          <h3>Student Food Hub</h3>
+          <p>Affordable meals and snacks suitable for students.</p>
+          <span class="price">₱50 - ₱150</span>
+          <a href="favorites.html" class="favorite-link" data-icon="🍔" data-name="Student Food Hub" data-desc="Affordable meals and snacks suitable for students." data-price="₱50 - ₱150">☆ Add to Favorites</a>
+        </div>
+
+        <div class="place-card" data-name="Cozy Coffee Shop" data-price-min="80" data-price-max="180" id="coffee" data-menu='[{"name":"Brewed Coffee","price":80},{"name":"Cafe Latte","price":120},{"name":"Fruit Frappe","price":150},{"name":"Pastry Set","price":180}]'>
+          <div class="place-icon">☕</div>
+          <h3>Cozy Coffee Shop</h3>
+          <p>A relaxing place for studying, reading, or hanging out.</p>
+          <span class="price">₱80 - ₱180</span>
+          <a href="favorites.html" class="favorite-link" data-icon="☕" data-name="Cozy Coffee Shop" data-desc="A relaxing place for studying, reading, or hanging out." data-price="₱80 - ₱180">☆ Add to Favorites</a>
+        </div>
+
+        <div class="place-card" data-name="Study Corner" data-price-min="0" data-price-max="50" id="study" data-menu='[{"name":"Study Seat (2 hrs)","price":0},{"name":"Study Seat (Whole Day)","price":50},{"name":"Printing (per page)","price":5},{"name":"Bottled Water","price":20}]'>
+          <div class="place-icon">📚</div>
+          <h3>Study Corner</h3>
+          <p>Quiet and comfortable space for students to study.</p>
+          <span class="price">Student Friendly</span>
+          <a href="favorites.html" class="favorite-link" data-icon="📚" data-name="Study Corner" data-desc="Quiet and comfortable space for students to study." data-price="Student Friendly">☆ Add to Favorites</a>
+        </div>
+
+        <div class="place-card" data-name="Entertainment Spot" data-price-min="100" data-price-max="300" id="entertainment" data-menu='[{"name":"Movie Ticket","price":100},{"name":"Snack Combo","price":120},{"name":"Game Room Access","price":150},{"name":"Karaoke Room (per hr)","price":300}]'>
+          <div class="place-icon">🎬</div>
+          <h3>Entertainment Spot</h3>
+          <p>Fun activities and places where students can relax.</p>
+          <span class="price">₱100 - ₱300</span>
+          <a href="favorites.html" class="favorite-link" data-icon="🎬" data-name="Entertainment Spot" data-desc="Fun activities and places where students can relax." data-price="₱100 - ₱300">☆ Add to Favorites</a>
+        </div>
+      </div>
+
+      <div class="page-navigation">
+        <a href="dashboard.html">← Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="menuModal">
+    <div class="modal-box">
+      <button type="button" class="modal-close" id="modalCloseBtn">✕</button>
+      <h3 id="modalTitle">Menu</h3>
+      <div id="modalItems"></div>
+      <p class="modal-hint" id="modalHint"></p>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Search filter ----------
+    const searchInput = document.querySelector('.search-box input[type="text"]');
+    const searchBtn = document.querySelector('.search-box button');
+    const customizeBtn = document.getElementById('customizeBtn');
+    const budgetRangeBox = document.getElementById('budgetRangeBox');
+    const budgetMinInput = document.getElementById('budgetMin');
+    const budgetMaxInput = document.getElementById('budgetMax');
+    const placeCards = document.querySelectorAll('.place-card');
+
+    customizeBtn.addEventListener('click', function () {
+      const isOpen = budgetRangeBox.classList.toggle('is-open');
+      customizeBtn.textContent = isOpen ? 'Customize ▴' : 'Customize ▾';
+    });
+
+    function runSearch() {
+      const query = searchInput.value.trim().toLowerCase();
+
+      const minVal = budgetMinInput.value.trim();
+      const maxVal = budgetMaxInput.value.trim();
+      const filterMin = minVal === '' ? null : parseFloat(minVal);
+      const filterMax = maxVal === '' ? null : parseFloat(maxVal);
+
+      placeCards.forEach(card => {
+        const name = card.dataset.name.toLowerCase();
+        const desc = card.querySelector('p').textContent.toLowerCase();
+        const textMatches = name.includes(query) || desc.includes(query);
+
+        const cardMin = parseFloat(card.dataset.priceMin);
+        const cardMax = parseFloat(card.dataset.priceMax);
+
+        let budgetMatches = true;
+        if (filterMin !== null && !isNaN(cardMax) && cardMax < filterMin) {
+          budgetMatches = false;
+        }
+        if (filterMax !== null && !isNaN(cardMin) && cardMin > filterMax) {
+          budgetMatches = false;
+        }
+
+        card.style.display = (textMatches && budgetMatches) ? '' : 'none';
+      });
+    }
+
+    searchInput.addEventListener('input', runSearch);
+    searchBtn.addEventListener('click', runSearch);
+    budgetMinInput.addEventListener('input', runSearch);
+    budgetMaxInput.addEventListener('input', runSearch);
+
+    // ---------- Menu modal ----------
+    const menuModal = document.getElementById('menuModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalItems = document.getElementById('modalItems');
+    const modalHint = document.getElementById('modalHint');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    function renderMenu(card) {
+      const menu = JSON.parse(card.dataset.menu || '[]');
+      modalTitle.textContent = card.dataset.name;
+
+      const minVal = budgetMinInput.value.trim();
+      const maxVal = budgetMaxInput.value.trim();
+      const filterMin = minVal === '' ? null : parseFloat(minVal);
+      const filterMax = maxVal === '' ? null : parseFloat(maxVal);
+      const hasFilter = filterMin !== null || filterMax !== null;
+
+      modalItems.innerHTML = '';
+      menu.forEach(item => {
+        const inBudget =
+          (filterMin === null || item.price >= filterMin) &&
+          (filterMax === null || item.price <= filterMax);
+
+        const row = document.createElement('div');
+        row.className = 'menu-item' + (hasFilter && !inBudget ? ' out-of-budget' : '');
+        row.innerHTML = `
+          <span class="menu-item-name">${item.name}</span>
+          <span class="menu-item-price">₱${item.price.toFixed(2)}</span>
+        `;
+        modalItems.appendChild(row);
+      });
+
+      modalHint.textContent = hasFilter
+        ? 'Greyed-out items fall outside your Customize budget range.'
+        : 'Set a Min/Max budget in Customize to highlight what fits.';
+    }
+
+    function openMenuModal(card) {
+      renderMenu(card);
+      menuModal.classList.add('is-open');
+    }
+
+    function closeMenuModal() {
+      menuModal.classList.remove('is-open');
+    }
+
+    placeCards.forEach(card => {
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('.favorite-link')) return;
+        openMenuModal(card);
+      });
+    });
+
+    modalCloseBtn.addEventListener('click', closeMenuModal);
+    menuModal.addEventListener('click', function (e) {
+      if (e.target === menuModal) closeMenuModal();
+    });
+
+    // ---------- Favorites (shared with favorites.html via localStorage) ----------
+    let memoryFavorites = [];
+    let storageWorks = true;
+
+    function loadFavorites() {
+      if (!storageWorks) return memoryFavorites;
+      try {
+        const saved = localStorage.getItem('sakto-favorites');
+        return saved ? JSON.parse(saved) : [];
+      } catch (err) {
+        storageWorks = false;
+        return memoryFavorites;
+      }
+    }
+
+    function saveFavorites(favs) {
+      if (!storageWorks) { memoryFavorites = favs; return; }
+      try {
+        localStorage.setItem('sakto-favorites', JSON.stringify(favs));
+      } catch (err) {
+        storageWorks = false;
+        memoryFavorites = favs;
+      }
+    }
+
+    function updateFavoriteLinks() {
+      const favs = loadFavorites();
+      document.querySelectorAll('.favorite-link').forEach(link => {
+        const isFav = favs.some(f => f.name === link.dataset.name);
+        link.textContent = isFav ? '★ Added to Favorites' : '☆ Add to Favorites';
+        link.classList.toggle('is-favorite', isFav);
+      });
+    }
+
+    document.querySelectorAll('.favorite-link').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const favs = loadFavorites();
+        const already = favs.some(f => f.name === link.dataset.name);
+
+        if (already) {
+          saveFavorites(favs.filter(f => f.name !== link.dataset.name));
+        } else {
+          favs.push({
+            icon: link.dataset.icon,
+            name: link.dataset.name,
+            desc: link.dataset.desc,
+            price: link.dataset.price,
+            time: Date.now()
+          });
+          saveFavorites(favs);
+        }
+        updateFavoriteLinks();
+      });
+    });
+
+    updateFavoriteLinks();
+  </script>
+<footer class="site-footer"><p>© 2026 SAKTO · Tarlac State University, College of Computer Studies · Web Development Final Project</p></footer>
+</body>
+</html>

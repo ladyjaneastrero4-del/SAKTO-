@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAKTO - Dashboard</title>
+  <meta name="description" content="Your SAKTO dashboard: recent activity, quick links and app settings.">
+  <meta property="og:title" content="SAKTO - Dashboard">
+  <meta property="og:description" content="Your SAKTO dashboard: recent activity, quick links and app settings.">
+  <meta property="og:image" content="assets/hero.svg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    
+    .password-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .password-modal-overlay.show {
+      display: flex;
+    }
+    .password-modal {
+      background: var(--surface, #fff);
+      border-radius: var(--radius, 14px);
+      padding: 20px;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: var(--shadow, 0 4px 16px rgba(0,0,0,0.15));
+    }
+    .password-modal h3 {
+      margin: 0 0 4px;
+      font-size: 1.05rem;
+    }
+    .password-modal label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin: 12px 0 4px;
+    }
+    .password-modal input {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border, #E2E8F0);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+    .password-error {
+      color: var(--danger, #D95763);
+      font-size: 0.82rem;
+      min-height: 18px;
+      margin: 10px 0 0;
+    }
+    .password-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .modal-btn {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .modal-btn.cancel {
+      background: var(--bg, #F6F8FB);
+      color: var(--text, #1E293B);
+    }
+    .modal-btn.save {
+      background: var(--primary, #1F3A5F);
+      color: #fff;
+    }
+    .modal-btn.save:hover { background: var(--primary-dark, #162A47); }
+    body.dark-mode .password-modal {
+      background-color: #1E2530;
+      color: #EDEFF2;
+    }
+    body.dark-mode .password-modal input {
+      background-color: #14181f;
+      color: #EDEFF2;
+      border-color: #2C3644;
+    }
+    body.dark-mode .modal-btn.cancel {
+      background-color: #14181f;
+      color: #EDEFF2;
+    }
+  </style>
+</head>
+<body data-protected="true">
+  <header class="site-header"><a class="brand-link" href="index.html">🌿 SAKTO</a><button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button><nav id="siteNav" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="dashboard.html">Dashboard</a><a href="budget.html">Budget</a><a href="savings.html">Savings</a><a href="local-discovery.html">Discover</a><a href="favorites.html">Favorites</a><a href="contact.html">Contact</a></nav></header>
+
+  <div role="main" class="container wide-container">
+    <div class="logo">
+      <p class="brand-name">SAKTO</p>
+      <p>Student Budget & Local Discovery</p>
+    </div>
+
+    <!-- Greeting -->
+    <div class="utility-greeting">
+      <h2 id="greetingText">Hello!</h2>
+      <p id="dateTimeText"></p>
+    </div>
+
+    <!-- Login / profile status -->
+    <div class="profile-status">
+      <div class="profile-info">
+        <div class="avatar" id="avatarInitial">S</div>
+        <div>
+          <div><strong id="userName">Student</strong></div>
+          <small>● Logged in</small>
+        </div>
+      </div>
+      <a href="index.html" id="logoutLink" >Log out</a>
+    </div>
+
+    <div class="dashboard">
+      <h1>Welcome to SAKTO!</h1>
+      <p class="dashboard-description">
+        Manage your student budget and discover useful local places.
+      </p>
+
+      <div class="dashboard-buttons" >
+        <a href="budget.html"><button type="button">💰 Budget Tracker</button></a>
+        <a href="savings.html"><button type="button">🐷 Savings</button></a>
+        <a href="local-discovery.html"><button type="button">📍 Local Discovery</button></a>
+        <a href="favorites.html"><button type="button">⭐ Favorite Spots</button></a>
+      </div>
+    </div>
+
+   
+    <div class="activity-feed">
+      <h3>Recent Activity</h3>
+      <div id="activityList"></div>
+    </div>
+
+   
+    <div class="settings-card">
+      <h3>⚙️ Settings</h3>
+
+      
+      <div class="settings-row">
+        <div class="settings-row-label">
+          Currency
+          <small>Used across budget and expenses</small>
+        </div>
+        <select id="currencySelect" class="currency-select">
+          <option value="₱">₱ PHP</option>
+          <option value="$">$ USD</option>
+          <option value="€">€ EUR</option>
+          <option value="£">£ GBP</option>
+        </select>
+      </div>
+
+      
+      <div class="settings-row">
+        <div class="settings-row-label">
+          Dark Mode
+          <small>Easier on the eyes at night</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      
+      <div class="settings-row">
+        <div class="settings-row-label">
+          Budget Alerts
+          <small>Notify when nearing your limit</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="budgetAlertsToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="settings-row">
+        <div class="settings-row-label">
+          Local Deals
+          <small>Notify about nearby student deals</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="dealsAlertsToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      
+      <div class="settings-row">
+        <div class="settings-row-label">
+          Font Size
+          <small>Adjust text size across the app</small>
+        </div>
+        <select id="fontSizeSelect" class="currency-select">
+          <option value="small">Small</option>
+          <option value="medium" selected>Medium</option>
+          <option value="large">Large</option>
+        </select>
+      </div>
+
+     
+      <div class="settings-row">
+        <div class="settings-row-label">
+          Language
+          <small>Choose your preferred language</small>
+        </div>
+        <select id="languageSelect" class="currency-select">
+          <option value="en">English</option>
+          <option value="tl">Tagalog</option>
+        </select>
+      </div>
+
+      <div class="settings-row">
+        <div class="settings-row-label">
+          Password
+          <small>Update your account password</small>
+        </div>
+        <button type="button" class="modal-btn cancel" id="openPasswordModalBtn">Change</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="changePasswordModal" class="password-modal-overlay">
+    <div class="password-modal">
+      <h3>Change Password</h3>
+
+      <label for="currentPassword">Current Password</label>
+      <input type="password" id="currentPassword" placeholder="Enter current password">
+
+      <label for="newPassword">New Password</label>
+      <input type="password" id="newPassword" placeholder="Enter new password">
+
+      <label for="confirmPassword">Confirm New Password</label>
+      <input type="password" id="confirmPassword" placeholder="Re-enter new password">
+
+      <p id="passwordError" class="password-error"></p>
+
+      <div class="password-modal-actions">
+        <button type="button" class="modal-btn cancel" id="cancelPasswordBtn">Cancel</button>
+        <button type="button" class="modal-btn save" id="savePasswordBtn">Save</button>
+      </div>
+    </div>
+  </div>
+  
+
+  <script>
+    function updateGreeting() {
+      const now = new Date();
+      const hour = now.getHours();
+      let greeting = "Good evening!";
+      if (hour < 12) greeting = "Good morning!";
+      else if (hour < 18) greeting = "Good afternoon!";
+
+      document.getElementById("greetingText").textContent = greeting;
+
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      };
+      document.getElementById("dateTimeText").textContent =
+        now.toLocaleDateString("en-US", options);
+    }
+    updateGreeting();
+    setInterval(updateGreeting, 60000); // refresh every minute
+
+    function readStorage(key) {
+      try {
+        const saved = localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : [];
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function timeAgo(ts) {
+      if (!ts) return 'Earlier';
+      const diffMs = Date.now() - ts;
+      const mins = Math.floor(diffMs / 60000);
+      if (mins < 1) return 'Just now';
+      if (mins < 60) return mins + (mins === 1 ? ' min ago' : ' mins ago');
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) return hours + (hours === 1 ? ' hour ago' : ' hours ago');
+      const days = Math.floor(hours / 24);
+      if (days === 1) return 'Yesterday';
+      if (days < 7) return days + ' days ago';
+      return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function formatPeso(num) {
+      return SAKTO.cur() + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function buildActivity() {
+      const activity = [];
+
+      readStorage('sakto-expenses').forEach(exp => {
+        activity.push({
+          text: `Added expense: ${exp.name} — ${formatPeso(exp.amount)}`,
+          time: exp.time || 0
+        });
+      });
+
+      readStorage('sakto-savings').forEach(entry => {
+        const label = entry.label || entry.period;
+        activity.push({
+          text: `Logged savings (${label}): ${formatPeso(entry.amount)}`,
+          time: entry.time || 0
+        });
+      });
+
+      readStorage('sakto-favorites').forEach(fav => {
+        activity.push({
+          text: `Favorited: ${fav.name}`,
+          time: fav.time || 0
+        });
+      });
+
+      return activity.sort((a, b) => b.time - a.time).slice(0, 6);
+    }
+
+    function renderActivity() {
+      const list = document.getElementById("activityList");
+      const recentActivity = buildActivity();
+      list.innerHTML = "";
+
+      if (recentActivity.length === 0) {
+        list.innerHTML = '<p style="color:var(--muted);">No recent activity yet — start adding expenses, savings, or favorites!</p>';
+        return;
+      }
+
+      recentActivity.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "activity-item";
+        row.innerHTML = `
+          <span>${SAKTO.esc(item.text)}</span>
+          <span class="activity-time">${timeAgo(item.time)}</span>
+        `;
+        list.appendChild(row);
+      });
+    }
+    renderActivity();
+
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    if (localStorage.getItem('sakto-dark-mode') === 'true') {
+      document.body.classList.add('dark-mode');
+      darkModeToggle.checked = true;
+    }
+
+    darkModeToggle.addEventListener('change', () => {
+      document.body.classList.toggle('dark-mode', darkModeToggle.checked);
+      try {
+        localStorage.setItem('sakto-dark-mode', darkModeToggle.checked);
+      } catch (err) {}
+    });
+
+    const currencySelect = document.getElementById('currencySelect');
+    const savedCurrency = localStorage.getItem('sakto-currency');
+    if (savedCurrency) currencySelect.value = savedCurrency;
+
+    currencySelect.addEventListener('change', () => {
+      try {
+        localStorage.setItem('sakto-currency', currencySelect.value);
+      } catch (err) {}
+    });
+
+    const budgetAlertsToggle = document.getElementById('budgetAlertsToggle');
+    const dealsAlertsToggle = document.getElementById('dealsAlertsToggle');
+
+    budgetAlertsToggle.checked = localStorage.getItem('sakto-budget-alerts') !== 'false';
+    dealsAlertsToggle.checked = localStorage.getItem('sakto-deals-alerts') !== 'false';
+
+    budgetAlertsToggle.addEventListener('change', () => {
+      try {
+        localStorage.setItem('sakto-budget-alerts', budgetAlertsToggle.checked);
+      } catch (err) {}
+    });
+
+    dealsAlertsToggle.addEventListener('change', () => {
+      try {
+        localStorage.setItem('sakto-deals-alerts', dealsAlertsToggle.checked);
+      } catch (err) {}
+    });
+
+    const fontSizeSelect = document.getElementById('fontSizeSelect');
+    const fontSizeMap = { small: '14px', medium: '16px', large: '19px' };
+
+    function applyFontSize(size) {
+      document.documentElement.style.fontSize = fontSizeMap[size] || fontSizeMap.medium;
+    }
+
+    let savedFontSize = 'medium';
+    try {
+      savedFontSize = localStorage.getItem('sakto-font-size') || 'medium';
+    } catch (err) {}
+    fontSizeSelect.value = savedFontSize;
+    applyFontSize(savedFontSize);
+
+    fontSizeSelect.addEventListener('change', () => {
+      try {
+        localStorage.setItem('sakto-font-size', fontSizeSelect.value);
+      } catch (err) {}
+      applyFontSize(fontSizeSelect.value);
+    });
+
+    // ---------- Language ----------
+    const languageSelect = document.getElementById('languageSelect');
+
+    try {
+      const savedLanguage = localStorage.getItem('sakto-language');
+      if (savedLanguage) languageSelect.value = savedLanguage;
+    } catch (err) {}
+
+    languageSelect.addEventListener('change', () => {
+      try {
+        localStorage.setItem('sakto-language', languageSelect.value);
+      } catch (err) {}
+      // Hook your translation function here if/when the app supports
+      // multiple languages, e.g. applyTranslations(languageSelect.value);
+    });
+
+    // ---------- Change password ----------
+    const changePasswordModal = document.getElementById('changePasswordModal');
+    const currentPasswordInput = document.getElementById('currentPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordErrorEl = document.getElementById('passwordError');
+
+    function openPasswordModal() {
+      changePasswordModal.classList.add('show');
+    }
+
+    function closePasswordModal() {
+      changePasswordModal.classList.remove('show');
+      currentPasswordInput.value = '';
+      newPasswordInput.value = '';
+      confirmPasswordInput.value = '';
+      passwordErrorEl.style.color = '';
+      passwordErrorEl.textContent = '';
+    }
+
+    function submitPasswordChange() {
+      const current = currentPasswordInput.value;
+      const newPass = newPasswordInput.value;
+      const confirm = confirmPasswordInput.value;
+
+      if (!current || !newPass || !confirm) {
+        passwordErrorEl.style.color = '';
+        passwordErrorEl.textContent = 'Please fill in all fields.';
+        return;
+      }
+      if (newPass.length < 6) {
+        passwordErrorEl.style.color = '';
+        passwordErrorEl.textContent = 'New password must be at least 6 characters.';
+        return;
+      }
+      if (newPass !== confirm) {
+        passwordErrorEl.style.color = '';
+        passwordErrorEl.textContent = 'New passwords do not match.';
+        return;
+      }
+
+      
+      passwordErrorEl.style.color = '#3E9B5C';
+      passwordErrorEl.textContent = 'Password updated!';
+      setTimeout(closePasswordModal, 1200);
+    }
+
+    document.getElementById('openPasswordModalBtn').addEventListener('click', openPasswordModal);
+    document.getElementById('cancelPasswordBtn').addEventListener('click', closePasswordModal);
+    document.getElementById('savePasswordBtn').addEventListener('click', submitPasswordChange);
+    changePasswordModal.addEventListener('click', (e) => {
+      if (e.target === changePasswordModal) closePasswordModal();
+    });
+  </script>
+  
+<footer class="site-footer"><p>© 2026 SAKTO · Tarlac State University, College of Computer Studies · Web Development Final Project</p></footer>
+</body>
+</html>

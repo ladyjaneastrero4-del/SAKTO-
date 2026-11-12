@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAKTO - Home</title>
+  <meta name="description" content="SAKTO helps students track budgets, save money and discover affordable places nearby.">
+  <meta property="og:title" content="SAKTO - Home">
+  <meta property="og:description" content="SAKTO helps students track budgets, save money and discover affordable places nearby.">
+  <meta property="og:image" content="assets/hero.svg">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script src="app.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header"><a class="brand-link" href="index.html">🌿 SAKTO</a><button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button><nav id="siteNav" aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="dashboard.html">Dashboard</a><a href="budget.html">Budget</a><a href="savings.html">Savings</a><a href="local-discovery.html">Discover</a><a href="favorites.html">Favorites</a><a href="contact.html">Contact</a></nav></header>
+<div role="main" class="container wide-container">
+    <section class="page-box hero">
+      <div>
+        <h1>Make every peso count, student.</h1>
+        <p class="page-description">SAKTO helps you track your budget, grow your savings and find affordable places around you.</p>
+        <a class="cta" href="register.html">Create a free account</a><a class="cta alt" href="login.html">Log in</a>
+      </div>
+      <img src="assets/hero.svg" alt="Illustration of student budget cards with the SAKTO peso logo" width="400" height="260">
+    </section>
+    <section class="page-box section-card" aria-labelledby="features">
+      <h2 id="features">What you can do</h2>
+      <div class="feature-grid">
+        <article><h3>💰 Budget Tracker</h3><p>Log expenses by category and see what remains.</p></article>
+        <article><h3>🐷 Savings</h3><p>Record leftover money weekly or monthly.</p></article>
+        <article><h3>📍 Local Discovery</h3><p>Filter food, coffee and study spots by your price range.</p></article>
+        <article><h3>⭐ Favorites</h3><p>Keep the places you love in one list.</p></article>
+      </div>
+    </section>
+    <section class="page-box section-card" aria-labelledby="calc">
+      <h2 id="calc">Daily allowance calculator</h2>
+      <p class="page-description">How much can you spend each day?</p>
+      <form id="calcForm" novalidate>
+        <label for="calcAllowance">Allowance (total)</label>
+        <input type="number" id="calcAllowance" min="1" step="0.01" placeholder="e.g. 1500">
+        <label for="calcDays">Number of days</label>
+        <input type="number" id="calcDays" min="1" step="1" placeholder="e.g. 7">
+        <button type="submit">Calculate</button>
+        <p class="form-error" id="calcResult" role="status"></p>
+      </form>
+    </section>
+  </div>
+<footer class="site-footer"><p>© 2026 SAKTO · Tarlac State University, College of Computer Studies · Web Development Final Project</p></footer>
+</body>
+</html>
